@@ -126,15 +126,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", lambda w: dlg.response(gtk.RESPONSE_ACCEPT))
-        value.connect("activate", lambda w: dlg.response(gtk.RESPONSE_ACCEPT))
+        key.connect("activate", self.check_empty, "Key")
+        value.connect("activate", self.check_empty, "Value")
 
         response = dlg.run()
         dlg.destroy()
 
         if response == gtk.RESPONSE_ACCEPT:
-            model[iter][0] = key.get_text()
-            model[iter][1] = value.get_text()
+            if self.check_empty(key, "Key") and self.check_empty(key, "Value"):
+                model[iter][0] = key.get_text()
+                model[iter][1] = value.get_text()
 
     def pref_clicked(self, widget):
         id = self.open_changeset("my test changeset")
