@@ -290,12 +290,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         savebox = gtk.HBox(False, 0)
         self.combobox = gtk.combo_box_new_text()
         self.entry = gtk.Entry()
+
         self.okbutton = gtk.Button(stock="gtk-ok")
+        self.okbutton.set_use_underline(True)
         self.addbutton = gtk.Button(stock="gtk-add")
+        self.addbutton.set_use_underline(True)
         self.delbutton = gtk.Button(stock="gtk-remove")
+        self.delbutton.set_use_underline(True)
         self.prefbutton = gtk.Button(stock="gtk-preferences")
+        self.prefbutton.set_use_underline(True)
         self.aboutbutton = gtk.Button(stock="gtk-about")
+        self.aboutbutton.set_use_underline(True)
         self.savebutton = gtk.Button(stock="gtk-save")
+        self.savebutton.set_use_underline(True)
 
         for obj in ["Node", "Way", "Relation"]:
             self.combobox.append_text(obj)
