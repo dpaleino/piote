@@ -191,6 +191,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 print repr("%s %s" % (tag.get("k"), tag.get("v")))
                 self.tags.append(None, [tag.get("k"), tag.get("v")])
 
+        # set sensitivity
+        self.addbutton.set_flags(gtk.SENSITIVE)
+        self.delbutton.set_flags(gtk.SENSITIVE)
+        self.savebutton.set_flags(gtk.SENSITIVE)
+
     def open_changeset(self, comment):
         conn = httplib.HTTP("api.openstreetmap.org")
         conn.putrequest("PUT", "/api/0.6/changeset/create")
@@ -302,7 +307,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         hbox.pack_start(self.aboutbutton, True, False, 0)
         vbox.pack_start(hbox, False, False, 0)
 
+        self.addbutton.unset_flags(gtk.SENSITIVE)
         buttonbox.pack_start(self.addbutton, True, True, 0)
+        self.delbutton.unset_flags(gtk.SENSITIVE)
         buttonbox.pack_start(self.delbutton, True, True, 0)
         vbox.pack_start(buttonbox, False, False, 0)
 
@@ -326,6 +333,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.tagsview.set_search_column(0)
         vbox.pack_start(self.tagsview, True, True, 0)
 
+        self.savebutton.unset_flags(gtk.SENSITIVE)
         savebox.pack_start(self.savebutton, True, False, 0)
         vbox.pack_start(savebox, False, False, 0)
         self.window.add(vbox)
