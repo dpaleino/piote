@@ -36,7 +36,7 @@ from StringIO import StringIO
 
 version = "0.0alpha1"
 
-# This should be your e-mail address
+# This should be your username or e-mail address
 user = "d.paleino@gmail.com"
 
 # Put here your password
@@ -154,7 +154,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         conn.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
         conn.putheader("Host", "www.openstreetmap.org")
         conn.putheader("Connection", "keep-alive")
-        conn.putheader("Authorization", "Basic " + string.strip(base64.encodestring(email + ":" + password)))
+        conn.putheader("Authorization", "Basic " + string.strip(base64.encodestring(user + ":" + password)))
         conn.putheader("Content-Length", str(len(xml)))
         conn.endheaders()
         conn.send(xml)
