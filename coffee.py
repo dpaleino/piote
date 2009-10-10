@@ -34,7 +34,7 @@ import httplib, urllib
 from lxml import etree
 from StringIO import StringIO
 
-version = "0.0alpha1"
+version = "0.0alpha2"
 
 # This should be your username or e-mail address
 user = "d.paleino@gmail.com"
