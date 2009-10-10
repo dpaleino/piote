@@ -93,6 +93,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         # FIXME:     ↑ cambia sempre la prima colonna.. devo trovare COME passare il numero di colonna all'evento
         pass
 
+    def check_empty(self, widget, field):
+        print repr(widget)
+        print repr(widget.get_text())
+        if widget.get_text() == "":
+            warn = gtk.Dialog("Error",
+                              None,
+                              gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                              (gtk.STOCK_OK, gtk.RESPONSE_REJECT))
+            warn.vbox.pack_start(gtk.Label("Cannot leave %s empty" % field))
+            warn.vbox.show_all()
+            warn.run()
+            warn.destroy()
+            return False
+        else:
+            return True
+
     def row_activated(self, widget, event, data=None):
         (model, iter) = widget.get_selection().get_selected()
         dlg = gtk.Dialog("Editing tag",
@@ -125,6 +141,40 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         print repr(id)
         self.close_changeset(id)
         print repr("Changeset %d" % id)
+
+    def add_tag(self, widget):
+        dlg = gtk.Dialog("Adding tag",
+                         None,
+                         gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                         (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                         gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        dlg.vbox.pack_start(gtk.Label("Key:"))
+        key = gtk.Entry()
+        dlg.vbox.pack_start(key)
+        dlg.vbox.pack_start(gtk.Label("Value:"))
+        value = gtk.Entry()
+        dlg.vbox.pack_start(value)
+        dlg.vbox.show_all()
+
+        key.connect("activate", self.check_empty, "Key")
+        value.connect("activate", self.check_empty, "Value")
+
+        response = dlg.run()
+        dlg.destroy()
+
+        if response == gtk.RESPONSE_ACCEPT:
+            if self.check_empty(key, "Key") and self.check_empty(value, "Value"):
+                key = key.get_text()
+                value = value.get_text()
+                for row in self.tags:
+                    if row[0] == key:
+                        row[1] = value
+                        return True
+                self.tags.append(None, [key, value])
+
+    def del_tag(self, widget, selection):
+        (store, iter) = selection.get_selected()
+        store.remove(iter)
 
     def getxml(self, obj, id):
         host = "api.openstreetmap.org"
@@ -222,6 +272,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.entry.connect("activate", self.search_id)
         self.aboutbutton.connect("clicked", self.show_about)
         self.tagsview.connect("row-activated", self.row_activated)
+        self.addbutton.connect("clicked", self.add_tag)
+        self.delbutton.connect("clicked", self.del_tag, self.tagsview.get_selection())
         #self.cell.connect("edited", self.cell_edited, self.tagsview.get_selection())
 
     def makegui(self, window):
@@ -230,10 +282,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         vbox = gtk.VBox(False, 0)
         hbox = gtk.HBox(False, 0)
+        buttonbox = gtk.HBox(False, 0)
         savebox = gtk.HBox(False, 0)
         self.combobox = gtk.combo_box_new_text()
         self.entry = gtk.Entry()
         self.okbutton = gtk.Button(stock="gtk-ok")
+        self.addbutton = gtk.Button(stock="gtk-add")
+        self.delbutton = gtk.Button(stock="gtk-remove")
         self.prefbutton = gtk.Button(stock="gtk-preferences")
         self.aboutbutton = gtk.Button(stock="gtk-about")
         self.savebutton = gtk.Button(stock="gtk-save")
@@ -247,6 +302,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         hbox.pack_start(self.prefbutton, True, False, 0)
         hbox.pack_start(self.aboutbutton, True, False, 0)
         vbox.pack_start(hbox, False, False, 0)
+
+        buttonbox.pack_start(self.addbutton, True, True, 0)
+        buttonbox.pack_start(self.delbutton, True, True, 0)
+        vbox.pack_start(buttonbox, False, False, 0)
 
         self.tags = gtk.TreeStore(str, str)
         #self.tags.append(None, None)
