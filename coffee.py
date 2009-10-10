@@ -97,12 +97,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         print repr(widget)
         print repr(widget.get_text())
         if widget.get_text() == "":
-            warn = gtk.Dialog("Error",
-                              None,
-                              gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                              (gtk.STOCK_OK, gtk.RESPONSE_REJECT))
-            warn.vbox.pack_start(gtk.Label("Cannot leave %s empty" % field))
-            warn.vbox.show_all()
+            warn = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+                                     flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                                     buttons=gtk.BUTTONS_OK,
+                                     message_format="Cannot leave %s empty" % field)
             warn.run()
             warn.destroy()
             return False
