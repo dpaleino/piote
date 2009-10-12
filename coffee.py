@@ -28,6 +28,8 @@ pygtk.require("2.0")
 import gtk
 import sys, string
 
+from ConfigParser import RawConfigParser
+
 from OsmApi import OsmApi
 from collections import defaultdict
 
@@ -45,7 +47,13 @@ class Coffee():
         self.obj = ""
         self.makegui(self.window)
         self.connect_signals()
-        self.api = OsmApi(username=user, password=password, appid="Coffee/%s" % version)
+
+        # OSM username and password
+        self.cfg = RawConfigParser()
+        self.cfg.read("coffee.cfg")
+        self.api = OsmApi(username=self.cfg.get("Authentication", "user"),
+                          password=self.cfg.get("Authentication", "password"),
+                          appid="Coffee/%s" % version)
 
     def delete_event(self, widget, event, data=None):
         gtk.main_quit()
