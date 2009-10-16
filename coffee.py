@@ -57,7 +57,7 @@ class Coffee():
         self.obj = self.combobox.get_active_text()
 
         # FIXME: this is here, instead of connect_signals(), because otherwise self.obj is ""
-        self.savebutton.connect("clicked", self.putxml, self.obj.lower(), self.tagsview.get_model())
+        self.savebutton.connect("clicked", self.set_changeset_msg, self.obj.lower(), self.tagsview.get_model())
 
         self.id = self.entry.get_text()
 
@@ -66,7 +66,7 @@ class Coffee():
             print "Foo!"
         else:
             try:
-                self.getxml(self.obj.lower(), int(self.id))
+                self.get(self.obj.lower(), int(self.id))
             except ValueError:
                 print "Bar!"
             except:
@@ -176,7 +176,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         (store, iter) = selection.get_selected()
         store.remove(iter)
 
-    def getxml(self, obj, id):
+    def get(self, obj, id):
         # Clear the previous data
         self.tags.clear()
 
@@ -197,8 +197,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.delbutton.set_flags(gtk.SENSITIVE)
         self.savebutton.set_flags(gtk.SENSITIVE)
 
-    def putxml(self, widget, obj, model):
-        changeset = self.api.ChangesetCreate({u"comment": u"comment"})
+    def put(self, msg, obj, model):
+        changeset = self.api.ChangesetCreate({u"comment": unicode(msg)})
         tags = defaultdict(str)
 
         for row in model:
@@ -217,6 +217,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
         self.api.ChangesetClose()
+
+    def set_changeset_msg(self, widget, obj, model):
+        dlg = gtk.Dialog("Uploading changeset",
+                         None,
+                         gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                         (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                         gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        dlg.vbox.pack_start(gtk.Label("Changeset message:"))
+        msg = gtk.Entry()
+        dlg.vbox.pack_start(msg)
+        dlg.vbox.show_all()
+
+        msg.connect("activate", self.check_empty, "Message")
+
+        response = dlg.run()
+        dlg.destroy()
+
+        if response == gtk.RESPONSE_ACCEPT:
+            if self.check_empty(msg, "Message"):
+                msg = msg.get_text()
+                self.put(msg, obj, model)
 
     def connect_signals(self):
         self.window.connect("delete_event", self.delete_event)
