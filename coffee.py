@@ -28,13 +28,10 @@ pygtk.require("2.0")
 import gtk
 import sys, string
 
-import time
-import base64
-import httplib, urllib
-from lxml import etree
-from StringIO import StringIO
+from OsmApi import OsmApi
+from collections import defaultdict
 
-version = "0.0alpha2"
+version = "0.1"
 
 # This should be your username or e-mail address
 user = "d.paleino@gmail.com"
@@ -48,6 +45,7 @@ class Coffee():
         self.obj = ""
         self.makegui(self.window)
         self.connect_signals()
+        self.api = OsmApi(username=user, password=password, appid="Coffee/%s" % version)
 
     def delete_event(self, widget, event, data=None):
         gtk.main_quit()
@@ -62,6 +60,7 @@ class Coffee():
         self.id = self.entry.get_text()
 
         if not self.obj:
+            # no object has been chosen
             print "Foo!"
         else:
             try:
@@ -176,98 +175,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         store.remove(iter)
 
     def getxml(self, obj, id):
-        host = "api.openstreetmap.org"
-        query = "/api/0.6/%s/%d" % (obj, id)
+        if obj == "node":
+            f = self.api.NodeGet
+        elif obj == "way":
+            f = self.api.WayGet
+        elif obj == "relation":
+            f = self.api.RelationGet
+        self.data = f(id)
+        tags = self.data["tag"]
 
-        conn = httplib.HTTPConnection(host)
-        conn.request("GET", query)
-        res = conn.getresponse()
-        self.tags.clear()
-        if res.status == 200:
-            self.xml = res.read()
-            parser = etree.XMLParser()
-            tree = etree.parse(StringIO(self.xml), parser)
-            for tag in tree.iter(tag="tag"):
-                print repr("%s %s" % (tag.get("k"), tag.get("v")))
-                self.tags.append(None, [tag.get("k"), tag.get("v")])
+        for key in tags:
+            self.tags.append(None, [key, tags[key]])
 
         # set sensitivity
         self.addbutton.set_flags(gtk.SENSITIVE)
         self.delbutton.set_flags(gtk.SENSITIVE)
         self.savebutton.set_flags(gtk.SENSITIVE)
 
-    def open_changeset(self, comment):
-        conn = httplib.HTTP("api.openstreetmap.org")
-        conn.putrequest("PUT", "/api/0.6/changeset/create")
-        xml = """<osm version='0.6' generator='Coffee'>
-  <changeset visible='true'>
-    <tag k='created_by' v='Coffee/%s' />
-    <tag k='comment' v='%s' />
-  </changeset>
-</osm>""" % (version, comment)
-        conn.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
-        conn.putheader("Host", "www.openstreetmap.org")
-        conn.putheader("Connection", "keep-alive")
-        conn.putheader("Authorization", "Basic " + string.strip(base64.encodestring(user + ":" + password)))
-        conn.putheader("Content-Length", str(len(xml)))
-        conn.endheaders()
-        conn.send(xml)
+    def putxml(self, widget, obj, model):
+        changeset = self.api.ChangesetCreate({u"comment": u"comment"})
+        tags = defaultdict(str)
 
-        print repr(conn.getreply())
-        return conn.getfile().read()
+        for row in model:
+            tags[unicode(row[0])] = unicode(row[1])
 
-    def close_changeset(self, id):
-        conn = httplib.HTTP("api.openstreetmap.org")
-        conn.putrequest("PUT", "/api/0.6/changeset/%s/close" % id)
-        conn.putheader("Host", "www.openstreetmap.org")
-        conn.putheader("Connection", "keep-alive")
-        conn.putheader("Authorization", "Basic " + string.strip(base64.encodestring(email + ":" + password)))
-        conn.endheaders()
-        statuscode, statusmessage, header = conn.getreply()
+        self.data["tag"] = tags
 
-    def putxml(self, widget, primitive, model):
-        parser = etree.XMLParser()
-        tree = etree.parse(StringIO(self.xml), parser)
-        changeset = self.open_changeset("comment")
-        #changeset = "foo"
-        tags = {}
-        f = StringIO()
+        if obj == "node":
+            f = self.api.NodeUpdate
+        elif obj == "way":
+            f = self.api.WayUpdate
+        elif obj == "relation":
+            f = self.api.RelationUpdate
+        result = f(self.data)
+        #self.data["version"] = result["version"]
 
-        # let's fix general attributes
-        for osm in tree.iter(tag="osm"):
-            osm.set("generator", "Coffee %s" % version)
-        for obj in tree.iter(tag=primitive):
-            # <way id="123" visible="true" timestamp="2009-03-31T09:35:43Z" version="7" changeset="872162" user="saftl" uid="7989">
-            objectid = obj.get("id")
-            #obj.set("timestamp", time.strftime("%Y-%m-%dT%H:%M:%SZ"))
-            #obj.set("version", str(int(obj.get("version")) + 1))
-            obj.set("changeset", changeset)
-
-            for tag in tree.iter(tag="tag"):
-                obj.remove(tag)
-            for row in model:
-                    print repr("%s %s" % (unicode(row[0]), unicode(row[1])))
-                    obj.append(etree.Element("tag", attrib={"k": unicode(row[0]), "v": unicode(row[1])}))
-
-        print repr("Object: %s" % objectid)
-        tree.write(f, encoding="UTF-8", xml_declaration=True)
-        f.seek(0)
-        xml = f.read()
-        f.close()
-        print repr(xml)
-        conn = httplib.HTTP("api.openstreetmap.org")
-        conn.putrequest("PUT", "/api/0.6/%s/%s" % (primitive, objectid))
-        conn.putheader("Host", "www.openstreetmap.org")
-        conn.putheader("Connection", "keep-alive")
-        conn.putheader("Authorization", "Basic " + string.strip(base64.encodestring(email + ":" + password)))
-        conn.putheader("Content-Length", str(len(xml)))
-        conn.endheaders()
-        conn.send(xml)
-        reply = conn.getreply()
-        print repr(reply)
-        print repr(conn.getfile().read())
-        self.close_changeset(changeset)
-        print repr("Changeset: %s" % changeset)
+        self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
+        self.api.ChangesetClose()
 
     def connect_signals(self):
         self.window.connect("delete_event", self.delete_event)
