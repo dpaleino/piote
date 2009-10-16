@@ -45,7 +45,9 @@ class Coffee():
         # OSM username and password
         self.cfg = RawConfigParser()
         self.cfg.read("coffee.cfg")
-        self.api = OsmApi(username=self.cfg.get("Authentication", "user"),
+        #self.api = OsmApi(api="api06.dev.openstreetmap.org",
+        self.api = OsmApi(
+                          username=self.cfg.get("Authentication", "user"),
                           password=self.cfg.get("Authentication", "password"),
                           appid="Coffee/%s" % version)
 
