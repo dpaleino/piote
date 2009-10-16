@@ -35,12 +35,6 @@ from collections import defaultdict
 
 version = "0.1"
 
-# This should be your username or e-mail address
-user = "d.paleino@gmail.com"
-
-# Put here your password
-password = ""
-
 class Coffee():
     def __init__(self):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
