@@ -210,9 +210,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         elif obj == "relation":
             f = self.api.RelationUpdate
         result = f(self.data)
-        #self.data["version"] = result["version"]
+        self.data["version"] = result["version"]
 
-        self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
+        #self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
         self.api.ChangesetClose()
 
     def set_changeset_msg(self, widget, obj, model):
