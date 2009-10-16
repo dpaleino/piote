@@ -137,10 +137,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 model[iter][1] = value.get_text()
 
     def pref_clicked(self, widget):
-        id = self.open_changeset("my test changeset")
-        print repr(id)
-        self.close_changeset(id)
-        print repr("Changeset %d" % id)
+        pass
 
     def add_tag(self, widget):
         dlg = gtk.Dialog("Adding tag",
