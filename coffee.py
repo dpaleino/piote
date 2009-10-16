@@ -177,6 +177,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         store.remove(iter)
 
     def getxml(self, obj, id):
+        # Clear the previous data
+        self.tags.clear()
+
         if obj == "node":
             f = self.api.NodeGet
         elif obj == "way":
