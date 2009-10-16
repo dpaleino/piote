@@ -155,8 +155,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", self.check_empty, "Key")
-        value.connect("activate", self.check_empty, "Value")
+        key.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
+        value.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
 
         response = dlg.run()
         dlg.destroy()
@@ -228,7 +228,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         dlg.vbox.pack_start(msg)
         dlg.vbox.show_all()
 
-        msg.connect("activate", self.check_empty, "Message")
+        msg.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
 
         response = dlg.run()
         dlg.destroy()
