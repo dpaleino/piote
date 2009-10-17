@@ -28,7 +28,7 @@ pygtk.require("2.0")
 import gtk
 import sys, string
 
-from ConfigParser import RawConfigParser
+from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError, NoOptionError
 
 from OsmApi import OsmApi
 from collections import defaultdict
@@ -43,11 +43,16 @@ class Coffee():
         self.connect_signals()
 
         # OSM username and password
-        self.cfg = RawConfigParser()
-        self.cfg.read("coffee.cfg")
+        self.cfg = SafeConfigParser()
+        if not self.cfg.read("coffee.cfg"):
+            self.pref_clicked(None)
+            try:
+                self.cfg.write(open("coffee.cfg", "w"))
+            except IOError:
+                print "Cannot write to coffee.cfg!"
         #self.api = OsmApi(api="api06.dev.openstreetmap.org",
         self.api = OsmApi(
-                          username=self.cfg.get("Authentication", "user"),
+                          username=self.cfg.get("Authentication", "username"),
                           password=self.cfg.get("Authentication", "password"),
                           appid="Coffee/%s" % version)
 
@@ -139,7 +144,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 model[iter][1] = value.get_text()
 
     def pref_clicked(self, widget):
-        pass
+        # try to load the configuration
+        dlg = gtk.Dialog("Preferences",
+                         None,
+                         gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                         (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                         gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        dlg.set_resizable(False)
+        frame = gtk.Frame()
+        frame.set_label("Authentication")
+        align = gtk.Alignment()
+        align.set_padding(0,0,12,0)
+        vbox = gtk.VBox()
+        vbox.pack_start(gtk.Label("Username"))
+        username = gtk.Entry()
+        vbox.pack_start(username)
+        vbox.pack_start(gtk.Label("Password"))
+        password = gtk.Entry()
+        password.set_visibility(False)
+        vbox.pack_start(password)
+        align.add(vbox)
+        frame.add(align)
+        dlg.vbox.pack_start(frame)
+
+        # populate fields
+        try:
+            username.set_text(self.cfg.get("Authentication", "username"))
+            password.set_text(self.cfg.get("Authentication", "password"))
+        except NoSectionError, NoOptionError:
+            pass
+
+        dlg.vbox.show_all()
+        response = dlg.run()
+        dlg.destroy()
+
+        if response == gtk.RESPONSE_ACCEPT:
+            if self.check_empty(username, "Username") and self.check_empty(password, "Password"):
+                try:
+                    self.cfg.add_section("Authentication")
+                except DuplicateSectionError:
+                    pass
+                finally:
+                    self.cfg.set("Authentication", "username", username.get_text())
+                    self.cfg.set("Authentication", "password", password.get_text())
 
     def add_tag(self, widget):
         dlg = gtk.Dialog("Adding tag",
@@ -241,7 +288,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def connect_signals(self):
         self.window.connect("delete_event", self.delete_event)
         self.okbutton.connect("clicked", self.search_id)
-        #self.prefbutton.connect("clicked", self.pref_clicked)
+        self.prefbutton.connect("clicked", self.pref_clicked)
         self.entry.connect("activate", self.search_id)
         self.aboutbutton.connect("clicked", self.show_about)
         self.tagsview.connect("row-activated", self.row_activated)
