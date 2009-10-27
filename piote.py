@@ -36,7 +36,7 @@ from OsmApi import OsmApi
 from collections import defaultdict
 from base64 import b64encode, b64decode
 
-version = "0.1"
+version = "0.1beta1"
 
 class Piote():
     def __init__(self):
