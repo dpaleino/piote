@@ -41,6 +41,7 @@ class Piote():
     def __init__(self):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.obj = ""
+        self.api_url = "api.openstreetmap.org"
         self.makegui(self.window)
         self.connect_signals()
 
@@ -52,8 +53,7 @@ class Piote():
                 self.cfg.write(open("piote.cfg", "w"))
             except IOError:
                 print "Cannot write to piote.cfg!"
-        #self.api = OsmApi(api="api06.dev.openstreetmap.org",
-        self.api = OsmApi(
+        self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
                           username=self.cfg.get("Authentication", "username"),
                           password=self.cfg.get("Authentication", "password"),
                           appid="Piote/%s" % version)
@@ -148,6 +148,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 model[iter][0] = key.get_text()
                 model[iter][1] = value.get_text()
 
+    def api_changed(self, widget, api):
+        if widget.get_active():
+            self.api_url = api
+
     def pref_clicked(self, widget):
         # try to load the configuration
         dlg = gtk.Dialog("Preferences",
@@ -175,8 +179,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         frame.add(align)
         dlg.vbox.pack_start(frame)
 
+        frame = gtk.Frame()
+        label = gtk.Label("<b>API</b>")
+        label.set_use_markup(True)
+        frame.set_label_widget(label)
+        frame.set_shadow_type(gtk.SHADOW_NONE)
+        align = gtk.Alignment()
+        align.set_padding(0,0,12,0)
+        vbox = gtk.VBox()
+        api = gtk.RadioButton(label="api.openstreetmap.org")
+        api06dev = gtk.RadioButton(group=api, label="api06.dev.openstreetmap.org")
+        try:
+            if self.cfg.get("DEFAULT", "api") == "api.openstreetmap.org":
+                api.set_active(True)
+            else:
+                api06dev.set_active(True)
+        except NoOptionError:
+            api.set_active(True)
+        vbox.pack_start(api)
+        vbox.pack_start(api06dev)
+        align.add(vbox)
+        frame.add(align)
+        dlg.vbox.pack_start(frame)
+
         username.connect("activate", self.check_empty, "Username", dlg)
         password.connect("activate", self.check_empty, "Password", dlg)
+
+        api.connect("toggled", self.api_changed, "api.openstreetmap.org")
+        api06dev.connect("toggled", self.api_changed, "api06.dev.openstreetmap.org")
 
         # populate fields
         try:
@@ -198,6 +228,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 finally:
                     self.cfg.set("Authentication", "username", username.get_text())
                     self.cfg.set("Authentication", "password", password.get_text())
+                    self.cfg.set("DEFAULT", "api", self.api_url)
 
     def add_tag(self, widget):
         dlg = gtk.Dialog("Adding tag",
