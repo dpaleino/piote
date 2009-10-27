@@ -41,6 +41,7 @@ version = "0.1"
 class Piote():
     def __init__(self):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_title("Piote %s" % version)
         self.obj = ""
         self.api_url = "api.openstreetmap.org"
         self.makegui(self.window)
