@@ -49,10 +49,6 @@ class Piote():
         self.cfg = SafeConfigParser()
         if not self.cfg.read("piote.cfg"):
             self.pref_clicked(None)
-            try:
-                self.cfg.write(open("piote.cfg", "w"))
-            except IOError:
-                print "Cannot write to piote.cfg!"
         self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
                           username=self.cfg.get("Authentication", "username"),
                           password=self.cfg.get("Authentication", "password"),
@@ -229,6 +225,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.cfg.set("Authentication", "username", username.get_text())
                     self.cfg.set("Authentication", "password", password.get_text())
                     self.cfg.set("DEFAULT", "api", self.api_url)
+                    try:
+                        self.cfg.write(open("piote.cfg", "w"))
+                    except IOError:
+                        print "Cannot write to piote.cfg!"
 
     def add_tag(self, widget):
         dlg = gtk.Dialog("Adding tag",
