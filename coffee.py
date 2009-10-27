@@ -167,6 +167,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         frame.add(align)
         dlg.vbox.pack_start(frame)
 
+        username.connect("activate", self.check_empty, "Username")
+        password.connect("activate", self.check_empty, "Password")
+
         # populate fields
         try:
             username.set_text(self.cfg.get("Authentication", "username"))
