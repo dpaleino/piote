@@ -156,8 +156,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                          (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                          gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
         dlg.set_resizable(False)
+        label = gtk.Label("<b>Authentication</b>")
+        label.set_use_markup(True)
         frame = gtk.Frame()
-        frame.set_label("Authentication")
+        frame.set_label_widget(label)
+        frame.set_shadow_type(gtk.SHADOW_NONE)
         align = gtk.Alignment()
         align.set_padding(0,0,12,0)
         vbox = gtk.VBox()
