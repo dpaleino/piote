@@ -101,7 +101,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         # FIXME:     ↑ cambia sempre la prima colonna.. devo trovare COME passare il numero di colonna all'evento
         pass
 
-    def check_empty(self, widget, field):
+    def check_empty(self, widget, field, dlg=None):
         print repr(widget)
         print repr(widget.get_text())
         if widget.get_text() == "":
@@ -113,6 +113,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             warn.destroy()
             return False
         else:
+            if dlg:
+                dlg.response(gtk.RESPONSE_ACCEPT)
             return True
 
     def row_activated(self, widget, event, data=None):
@@ -132,8 +134,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", self.check_empty, "Key")
-        value.connect("activate", self.check_empty, "Value")
+        key.connect("activate", self.check_empty, "Key", dlg)
+        value.connect("activate", self.check_empty, "Value", dlg)
 
         response = dlg.run()
         dlg.destroy()
@@ -167,8 +169,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         frame.add(align)
         dlg.vbox.pack_start(frame)
 
-        username.connect("activate", self.check_empty, "Username")
-        password.connect("activate", self.check_empty, "Password")
+        username.connect("activate", self.check_empty, "Username", dlg)
+        password.connect("activate", self.check_empty, "Password", dlg)
 
         # populate fields
         try:
@@ -205,8 +207,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
-        value.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
+        key.connect("activate", self.check_empty, "Key", dlg)
+        value.connect("activate", self.check_empty, "Value", dlg)
 
         response = dlg.run()
         dlg.destroy()
