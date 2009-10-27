@@ -34,6 +34,7 @@ from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError
 
 from OsmApi import OsmApi
 from collections import defaultdict
+from base64 import b64encode, b64decode
 
 version = "0.1"
 
@@ -51,7 +52,7 @@ class Piote():
             self.pref_clicked(None)
         self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
                           username=self.cfg.get("Authentication", "username"),
-                          password=self.cfg.get("Authentication", "password"),
+                          password=b64decode(self.cfg.get("Authentication", "password")),
                           appid="Piote/%s" % version)
 
     def delete_event(self, widget, event, data=None):
@@ -207,7 +208,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         # populate fields
         try:
             username.set_text(self.cfg.get("Authentication", "username"))
-            password.set_text(self.cfg.get("Authentication", "password"))
+            password.set_text(b64decode(self.cfg.get("Authentication", "password")))
         except NoSectionError, NoOptionError:
             pass
 
@@ -223,7 +224,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     pass
                 finally:
                     self.cfg.set("Authentication", "username", username.get_text())
-                    self.cfg.set("Authentication", "password", password.get_text())
+                    self.cfg.set("Authentication", "password", b64encode(password.get_text()))
                     self.cfg.set("DEFAULT", "api", self.api_url)
                     try:
                         self.cfg.write(open("piote.cfg", "w"))
