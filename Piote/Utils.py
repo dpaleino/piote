@@ -29,7 +29,7 @@ import pygtk
 pygtk.require("2.0")
 import gtk
 
-def check_empty(self, widget, field, dlg=None):
+def check_empty(widget, field, dlg=None):
     if widget.get_text() == "":
         warn = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
                                  flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
