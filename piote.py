@@ -32,16 +32,15 @@ import sys, string
 
 from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError, NoOptionError
 
+import Piote
 from Piote.OsmApi import OsmApi
 from collections import defaultdict
 from base64 import b64encode, b64decode
 
-version = "0.1beta1"
-
 class Piote():
     def __init__(self):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_title("Piote %s" % version)
+        self.window.set_title("Piote %s" % Piote.version)
         self.obj = ""
         self.api_url = "api.openstreetmap.org"
         self.makegui(self.window)
@@ -54,7 +53,7 @@ class Piote():
         self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
                           username=self.cfg.get("Authentication", "username"),
                           password=b64decode(self.cfg.get("Authentication", "password")),
-                          appid="Piote/%s" % version)
+                          appid="Piote/%s" % Piote.version)
 
     def delete_event(self, widget, event, data=None):
         gtk.main_quit()
@@ -83,7 +82,7 @@ class Piote():
         about = gtk.AboutDialog()
         about.set_program_name("Piote")
         about.set_comments("Piote Is an Osm Tag Editor")
-        about.set_version(version)
+        about.set_version(Piote.version)
         about.set_copyright("© 2009, David Paleino <d.paleino@gmail.com>")
         about.set_license("""Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
