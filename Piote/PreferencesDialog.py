@@ -36,7 +36,7 @@ from base64 import b64decode, b64encode
 import SignalHandlers as handlers
 
 class PreferencesDialog(gtk.Dialog):
-    def __init__(self):
+    def __init__(self, widget):
         # TODO: REMOVE!
         self.cfg = SafeConfigParser()
         self.cfg.read("piote.cfg")
