@@ -29,7 +29,12 @@ version = "0.1beta1"
 api_url = "api.openstreetmap.org"
 
 __all__ = [
-            "OsmApi",
             "AboutDialog",
+            "ChangesetDialog",
+            "MainWindow",
+            "OsmApi",
+            "OsmWrapper",
+            "PreferencesDialog",
+            "TagDialog",
             "Utils",
           ]
