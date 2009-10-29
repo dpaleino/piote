@@ -26,3 +26,5 @@
 # SOFTWARE.
 
 version = "0.1beta1"
+
+__all__ = ["OsmApi", "AboutDialog"]
