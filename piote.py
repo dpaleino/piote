@@ -35,6 +35,7 @@ from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError
 import Piote
 from Piote.AboutDialog import AboutDialog
 from Piote.OsmApi import OsmApi
+from Piote.PreferencesDialog import PreferencesDialog
 from Piote.Utils import *
 
 from collections import defaultdict
@@ -122,91 +123,8 @@ class Main():
                 model[iter][0] = key.get_text()
                 model[iter][1] = value.get_text()
 
-    def api_changed(self, widget, api):
-        if widget.get_active():
-            self.api_url = api
-
     def pref_clicked(self, widget):
-        # try to load the configuration
-        dlg = gtk.Dialog("Preferences",
-                         None,
-                         gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                         (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
-                         gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-        dlg.set_resizable(False)
-        frame = gtk.Frame()
-        label = gtk.Label("<b>Authentication</b>")
-        label.set_use_markup(True)
-        frame.set_label_widget(label)
-        frame.set_shadow_type(gtk.SHADOW_NONE)
-        align = gtk.Alignment()
-        align.set_padding(0,0,12,0)
-        vbox = gtk.VBox()
-        vbox.pack_start(gtk.Label("Username"))
-        username = gtk.Entry()
-        vbox.pack_start(username)
-        vbox.pack_start(gtk.Label("Password"))
-        password = gtk.Entry()
-        password.set_visibility(False)
-        vbox.pack_start(password)
-        align.add(vbox)
-        frame.add(align)
-        dlg.vbox.pack_start(frame)
-
-        frame = gtk.Frame()
-        label = gtk.Label("<b>API</b>")
-        label.set_use_markup(True)
-        frame.set_label_widget(label)
-        frame.set_shadow_type(gtk.SHADOW_NONE)
-        align = gtk.Alignment()
-        align.set_padding(0,0,12,0)
-        vbox = gtk.VBox()
-        api = gtk.RadioButton(label="api.openstreetmap.org")
-        api06dev = gtk.RadioButton(group=api, label="api06.dev.openstreetmap.org")
-        try:
-            if self.cfg.get("DEFAULT", "api") == "api.openstreetmap.org":
-                api.set_active(True)
-            else:
-                api06dev.set_active(True)
-        except NoOptionError:
-            api.set_active(True)
-        vbox.pack_start(api)
-        vbox.pack_start(api06dev)
-        align.add(vbox)
-        frame.add(align)
-        dlg.vbox.pack_start(frame)
-
-        username.connect("activate", check_empty, "Username", dlg)
-        password.connect("activate", check_empty, "Password", dlg)
-
-        api.connect("toggled", self.api_changed, "api.openstreetmap.org")
-        api06dev.connect("toggled", self.api_changed, "api06.dev.openstreetmap.org")
-
-        # populate fields
-        try:
-            username.set_text(self.cfg.get("Authentication", "username"))
-            password.set_text(b64decode(self.cfg.get("Authentication", "password")))
-        except NoSectionError, NoOptionError:
-            pass
-
-        dlg.vbox.show_all()
-        response = dlg.run()
-        dlg.destroy()
-
-        if response == gtk.RESPONSE_ACCEPT:
-            if check_empty(username, "Username") and check_empty(password, "Password"):
-                try:
-                    self.cfg.add_section("Authentication")
-                except DuplicateSectionError:
-                    pass
-                finally:
-                    self.cfg.set("Authentication", "username", username.get_text())
-                    self.cfg.set("Authentication", "password", b64encode(password.get_text()))
-                    self.cfg.set("DEFAULT", "api", self.api_url)
-                    try:
-                        self.cfg.write(open("piote.cfg", "w"))
-                    except IOError:
-                        print "Cannot write to piote.cfg!"
+        PreferencesDialog()
 
     def add_tag(self, widget):
         dlg = gtk.Dialog("Adding tag",

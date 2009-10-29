@@ -25,11 +25,12 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-version = "0.1beta1"
-api_url = "api.openstreetmap.org"
+import pygtk
+pygtk.require("2.0")
+import gtk
 
-__all__ = [
-            "OsmApi",
-            "AboutDialog",
-            "Utils",
-          ]
+import Piote
+
+def api_changed(widget, api):
+    if widget.get_active():
+        Piote.api_url = api
