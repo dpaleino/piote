@@ -32,7 +32,7 @@ import sys, string
 
 from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError, NoOptionError
 
-from OsmApi import OsmApi
+from Piote.OsmApi import OsmApi
 from collections import defaultdict
 from base64 import b64encode, b64decode
 
