@@ -1,0 +1,58 @@
+2009-10-27 0.1beta1
+
+  [ Carlo Stemberger ]
+  * [abf306b] (coffee.cfg, coffee.py) Splitting user data from the
+    source
+  * [30359a8] (.gitignore, coffee.py) Configuration wizard
+
+  [ David Paleino ]
+  * [22675c7] (OsmApi.py, coffee.py) Use PythonOsmApi
+  * [792d128] (.gitignore) Also ignore .pyc
+  * [86b7316] (coffee.py) Oops, forgot to remove them in Carlo's commit
+  * [c3f5b4e] (coffee.py) Fix newly introduced bug: clear data before
+    downloading new ones
+  * [dcd2ea2] (coffee.py) Implement changeset message
+  * [b50bf5b] (coffee.py) Remove debugging code
+  * [b41523c] (coffee.py) Solving Conflicts?
+  * [b9d1f1d] (coffee.py) Use dev API during development
+  * [41bd88b] (coffee.py) Better handling of gtk.Entry "activate"
+    signals
+  * [13f110d] (coffee.cfg) Remove coffee.cfg
+  * [af45542] (AUTHORS, LICENSE) Add support files
+  * [752d8c9] (coffee.py) Connect signals from authentication entries
+  * [d37a00c] (coffee.py) Improve check for empty fields
+  * [c13b556] (LICENSE, coffee.py => piote.py) Project renamed from
+    Coffee to Piote: Piote Is an Osm Tag Editor
+  * [30f1064] (piote.py) Minor changes to the look of the preferences
+    dialog
+  * [89c8db2] (piote.py) Make API choosable by the user
+  * [636bc9a] (piote.py) Fix config file writing
+  * [a8d6dbb] (piote.py) Minor aesthetic change in frame creation
+    location
+  * [8efdf36] (piote.py) Provide a minimum of security (base64 encoding
+    of the password)
+  * [050a04c] (piote.py) Add title to the main window :)
+  * [f85e931] (piote.py) Set version to 0.1beta1
+
+ -- David Paleino <d.paleino@gmail.com>  Tue, 27 Oct 2009 15:36:01 +0100
+
+2009-10-10 0.0alpha2
+
+  * [b58360d] (coffee.py) Remove unused OAuth components
+  * [28ad75a] (coffee.py) Complete variable renaming, fix comment
+  * [347eca4] (coffee.py) Bump version number
+  * [a51ed90] (coffee.py) Add "add"/"remove" tag buttons
+  * [32ce243] (coffee.py) Use check_empty also in row_activated
+  * [823800f] (coffee.py) Make it executable
+  * [b43efeb] (.gitignore) Ignore backup files
+  * [7aaed98] (coffee.py) Use MessageDialog instead of Dialog
+  * [2cb5e36] (coffee.py) Set different sensitivities according to statuses
+  * [0287380] (coffee.py) Enable Alt+letter for all buttons
+
+ -- David Paleino <d.paleino@gmail.com>  Sat, 10 Oct 2009 22:14:51 +0200
+
+2009-10-10 0.0alpha1
+
+  * [0d076ee] (coffee.py) Imported 0.0alpha1
+
+ -- David Paleino <d.paleino@gmail.com>  Sat, 10 Oct 2009 21:05:30 +0200
