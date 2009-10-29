@@ -24,36 +24,34 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
+
 import pygtk
 pygtk.require("2.0")
 import gtk
-import sys, string
 
-from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError, NoOptionError
+from Utils import *
 
-import Piote
-from Piote.AboutDialog import AboutDialog
-from Piote.TagDialog import AddTagDialog, EditTagDialog
-from Piote.PreferencesDialog import PreferencesDialog
-from Piote.MainWindow import MainWindow
-from Piote.Utils import *
+class ChangesetDialog(gtk.Dialog):
+    def __init__(self, widget, obj, model):
+        gtk.Dialog.__init__(self,
+                            "Uploading changeset",
+                            None,
+                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                            gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
 
-from collections import defaultdict
-from base64 import b64encode, b64decode
+        self.vbox.pack_start(gtk.Label("Changeset message:"))
+        msg = gtk.Entry()
+        self.vbox.pack_start(msg)
+        self.vbox.show_all()
 
-class Main():
-    def __init__(self):
-        MainWindow()
+        msg.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
 
-        self.obj = ""
-        self.api_url = "api.openstreetmap.org"
+        response = self.run()
+        self.destroy()
 
-        # OSM username and password
-        self.cfg = SafeConfigParser()
-        if not self.cfg.read("piote.cfg"):
-            self.pref_clicked(None)
-
-if __name__ == "__main__":
-    Main()
-    gtk.main()
+        if response == gtk.RESPONSE_ACCEPT:
+            if check_empty(msg, "Message"):
+                msg = msg.get_text()
+                osm = OsmWrapper()
+                osm.Put(msg, obj, model)

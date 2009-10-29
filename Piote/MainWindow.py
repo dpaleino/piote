@@ -35,6 +35,7 @@ from OsmWrapper import OsmWrapper
 from TagDialog import AddTagDialog, EditTagDialog
 from PreferencesDialog import PreferencesDialog
 from AboutDialog import AboutDialog
+from ChangesetDialog import ChangesetDialog
 
 class MainWindow():
     def __init__(self):
@@ -121,7 +122,6 @@ class MainWindow():
         self.savebutton = gtk.Button(stock="gtk-save")
         self.savebutton.set_use_underline(True)
         self.savebutton.unset_flags(gtk.SENSITIVE)
-        #self.savebutton.connect("clicked", ChangesetDialog, self.obj.lower(), tagsview.get_model())
         savebox.pack_start(self.savebutton, True, False, 0)
 
         vbox.show_all()
@@ -135,7 +135,7 @@ class MainWindow():
         self.obj = self.combobox.get_active_text()
 
         # FIXME: this is here, instead of connect_signals(), because otherwise self.obj is ""
-        #self.savebutton.connect("clicked", self.set_changeset_msg, self.obj.lower(), self.tagsview.get_model())
+        self.savebutton.connect("clicked", ChangesetDialog, self.obj.lower(), self.tagsview.get_model())
 
         if not self.obj:
             # no object has been chosen
