@@ -85,8 +85,6 @@ class Main():
 
     def show_about(self, widget):
         about = AboutDialog()
-        about.run()
-        about.destroy()
 
     def cell_edited(self, cell, path, new_text, selection):
         (model, _iter) = selection.get_selected()
