@@ -34,6 +34,7 @@ from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError
 
 import Piote
 from Piote.AboutDialog import AboutDialog
+from Piote.AddTagDialog import AddTagDialog
 from Piote.OsmApi import OsmApi
 from Piote.PreferencesDialog import PreferencesDialog
 from Piote.Utils import *
@@ -127,34 +128,7 @@ class Main():
         PreferencesDialog()
 
     def add_tag(self, widget):
-        dlg = gtk.Dialog("Adding tag",
-                         None,
-                         gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                         (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
-                         gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-        dlg.vbox.pack_start(gtk.Label("Key:"))
-        key = gtk.Entry()
-        dlg.vbox.pack_start(key)
-        dlg.vbox.pack_start(gtk.Label("Value:"))
-        value = gtk.Entry()
-        dlg.vbox.pack_start(value)
-        dlg.vbox.show_all()
-
-        key.connect("activate", check_empty, "Key", dlg)
-        value.connect("activate", check_empty, "Value", dlg)
-
-        response = dlg.run()
-        dlg.destroy()
-
-        if response == gtk.RESPONSE_ACCEPT:
-            if check_empty(key, "Key") and check_empty(value, "Value"):
-                key = key.get_text()
-                value = value.get_text()
-                for row in self.tags:
-                    if row[0] == key:
-                        row[1] = value
-                        return True
-                self.tags.append(None, [key, value])
+        dlg = AddTagDialog(self.tags)
 
     def del_tag(self, widget, selection):
         (store, iter) = selection.get_selected()
