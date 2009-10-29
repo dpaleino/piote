@@ -94,8 +94,8 @@ class PreferencesDialog(gtk.Dialog):
         username.connect("activate", check_empty, "Username", self)
         password.connect("activate", check_empty, "Password", self)
 
-        api.connect("toggled", handlers.api_changed, "api.openstreetmap.org")
-        api06dev.connect("toggled", handlers.api_changed, "api06.dev.openstreetmap.org")
+        api.connect("toggled", self.__api_changed, "api.openstreetmap.org")
+        api06dev.connect("toggled", self.__api_changed, "api06.dev.openstreetmap.org")
 
         # populate fields
         try:
@@ -122,3 +122,7 @@ class PreferencesDialog(gtk.Dialog):
                     self.cfg.write(open("piote.cfg", "w"))
                 except IOError:
                     print "Cannot write to piote.cfg!"
+
+    def __api_changed(self, widget, api):
+        if widget.get_active():
+            Piote.api_url = api
