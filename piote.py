@@ -35,6 +35,8 @@ from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError
 import Piote
 from Piote.AboutDialog import AboutDialog
 from Piote.OsmApi import OsmApi
+from Piote.Utils import *
+
 from collections import defaultdict
 from base64 import b64encode, b64decode
 
@@ -92,22 +94,6 @@ class Main():
         # FIXME:     ↑ cambia sempre la prima colonna.. devo trovare COME passare il numero di colonna all'evento
         pass
 
-    def check_empty(self, widget, field, dlg=None):
-        print repr(widget)
-        print repr(widget.get_text())
-        if widget.get_text() == "":
-            warn = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
-                                     flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                                     buttons=gtk.BUTTONS_OK,
-                                     message_format="Cannot leave %s empty" % field)
-            warn.run()
-            warn.destroy()
-            return False
-        else:
-            if dlg:
-                dlg.response(gtk.RESPONSE_ACCEPT)
-            return True
-
     def row_activated(self, widget, event, data=None):
         (model, iter) = widget.get_selection().get_selected()
         dlg = gtk.Dialog("Editing tag",
@@ -125,14 +111,14 @@ class Main():
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", self.check_empty, "Key", dlg)
-        value.connect("activate", self.check_empty, "Value", dlg)
+        key.connect("activate", check_empty, "Key", dlg)
+        value.connect("activate", check_empty, "Value", dlg)
 
         response = dlg.run()
         dlg.destroy()
 
         if response == gtk.RESPONSE_ACCEPT:
-            if self.check_empty(key, "Key") and self.check_empty(key, "Value"):
+            if check_empty(key, "Key") and check_empty(key, "Value"):
                 model[iter][0] = key.get_text()
                 model[iter][1] = value.get_text()
 
@@ -190,8 +176,8 @@ class Main():
         frame.add(align)
         dlg.vbox.pack_start(frame)
 
-        username.connect("activate", self.check_empty, "Username", dlg)
-        password.connect("activate", self.check_empty, "Password", dlg)
+        username.connect("activate", check_empty, "Username", dlg)
+        password.connect("activate", check_empty, "Password", dlg)
 
         api.connect("toggled", self.api_changed, "api.openstreetmap.org")
         api06dev.connect("toggled", self.api_changed, "api06.dev.openstreetmap.org")
@@ -208,7 +194,7 @@ class Main():
         dlg.destroy()
 
         if response == gtk.RESPONSE_ACCEPT:
-            if self.check_empty(username, "Username") and self.check_empty(password, "Password"):
+            if check_empty(username, "Username") and check_empty(password, "Password"):
                 try:
                     self.cfg.add_section("Authentication")
                 except DuplicateSectionError:
@@ -236,14 +222,14 @@ class Main():
         dlg.vbox.pack_start(value)
         dlg.vbox.show_all()
 
-        key.connect("activate", self.check_empty, "Key", dlg)
-        value.connect("activate", self.check_empty, "Value", dlg)
+        key.connect("activate", check_empty, "Key", dlg)
+        value.connect("activate", check_empty, "Value", dlg)
 
         response = dlg.run()
         dlg.destroy()
 
         if response == gtk.RESPONSE_ACCEPT:
-            if self.check_empty(key, "Key") and self.check_empty(value, "Value"):
+            if check_empty(key, "Key") and check_empty(value, "Value"):
                 key = key.get_text()
                 value = value.get_text()
                 for row in self.tags:
@@ -315,7 +301,7 @@ class Main():
         dlg.destroy()
 
         if response == gtk.RESPONSE_ACCEPT:
-            if self.check_empty(msg, "Message"):
+            if check_empty(msg, "Message"):
                 msg = msg.get_text()
                 self.put(msg, obj, model)
 
