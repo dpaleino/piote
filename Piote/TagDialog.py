@@ -31,10 +31,21 @@ import gtk
 
 from Utils import *
 
-class AddTagDialog(gtk.Dialog):
-    def __init__(self, tags):
+class TagDialog(gtk.Dialog):
+    def __init__(self, mode, widget, tags):
+        if mode == "new":
+            title = "Adding tag"
+            model = None
+            key_text = ""
+            value_text = ""
+        elif mode == "edit":
+            title = "Editing tag"
+            model, iter = widget.get_selection().get_selected()
+            key_text = model[iter][0]
+            value_text = model[iter][1]
+
         gtk.Dialog.__init__(self,
-                            "Adding tag",
+                            title,
                             None,
                             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                             (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
@@ -42,10 +53,12 @@ class AddTagDialog(gtk.Dialog):
 
         self.vbox.pack_start(gtk.Label("Key:"))
         key = gtk.Entry()
+        key.set_text(key_text)
         self.vbox.pack_start(key)
 
         self.vbox.pack_start(gtk.Label("Value:"))
         value = gtk.Entry()
+        value.set_text(value_text)
         self.vbox.pack_start(value)
 
         self.vbox.show_all()
@@ -61,10 +74,23 @@ class AddTagDialog(gtk.Dialog):
             if check_empty(key, "Key") and check_empty(value, "Value"):
                 self.key = key.get_text()
                 self.value = value.get_text()
-                for row in tags:
-                    if row[0] == self.key:
-                        already_key = True
-                        row[1] = self.value
 
-                if not already_key:
-                    tags.append(None, [self.key, self.value])
+                if model:
+                    model[iter][0] = self.key
+                    model[iter][1] = self.value
+                else:
+                    for row in tags:
+                        if row[0] == self.key:
+                            already_key = True
+                            row[1] = self.value
+
+                    if not already_key:
+                        tags.append(None, [self.key, self.value])
+
+class AddTagDialog(TagDialog):
+    def __init__(self, tags):
+        TagDialog.__init__(self, "new", None, tags)
+
+class EditTagDialog(TagDialog):
+    def __init__(self, widget, tags):
+        TagDialog.__init__(self, "edit", widget, tags)
