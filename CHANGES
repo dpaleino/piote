@@ -1,4 +1,4 @@
-2009-10-27 0.1beta1
+2009-10-30 0.1beta1
 
   [ Carlo Stemberger ]
   * [abf306b] (coffee.cfg, coffee.py) Splitting user data from the
@@ -33,8 +33,10 @@
     of the password)
   * [050a04c] (piote.py) Add title to the main window :)
   * [f85e931] (piote.py) Set version to 0.1beta1
+  * [186f75b] (CHANGES) Added changelog
+  * [d5d07ee] (piote.py) Fix bug when changing API on-the-fly
 
- -- David Paleino <d.paleino@gmail.com>  Tue, 27 Oct 2009 15:36:01 +0100
+ -- David Paleino <d.paleino@gmail.com>  Fri, 30 Oct 2009 13:24:36 +0100
 
 2009-10-10 0.0alpha2
 
