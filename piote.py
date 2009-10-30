@@ -216,7 +216,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         try:
             username.set_text(self.cfg.get("Authentication", "username"))
             password.set_text(b64decode(self.cfg.get("Authentication", "password")))
-        except NoSectionError, NoOptionError:
+        except (NoSectionError, NoOptionError):
             pass
 
         dlg.vbox.show_all()
