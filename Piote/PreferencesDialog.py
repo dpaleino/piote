@@ -33,7 +33,6 @@ import Piote
 from Piote.Utils import *
 from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError, DuplicateSectionError
 from base64 import b64decode, b64encode
-import SignalHandlers as handlers
 
 class PreferencesDialog(gtk.Dialog):
     def __init__(self, widget):

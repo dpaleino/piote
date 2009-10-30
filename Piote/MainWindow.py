@@ -30,7 +30,6 @@ pygtk.require("2.0")
 import gtk
 
 import Piote
-import SignalHandlers as handlers
 from OsmWrapper import OsmWrapper
 from TagDialog import AddTagDialog, EditTagDialog
 from PreferencesDialog import PreferencesDialog
