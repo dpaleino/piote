@@ -43,15 +43,17 @@ class Piote():
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_title("Piote %s" % version)
         self.obj = ""
-        self.api_url = "api.openstreetmap.org"
         self.makegui(self.window)
         self.connect_signals()
 
         # OSM username and password
         self.cfg = SafeConfigParser()
         if not self.cfg.read("piote.cfg"):
+            self.api_url = "api.openstreetmap.org"
             self.pref_clicked(None)
-        self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
+        else:
+            self.api_url = self.cfg.get("DEFAULT", "api")
+        self.api = OsmApi(api=self.api_url,
                           username=self.cfg.get("Authentication", "username"),
                           password=b64decode(self.cfg.get("Authentication", "password")),
                           appid="Piote/%s" % version)
@@ -149,6 +151,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def api_changed(self, widget, api):
         if widget.get_active():
             self.api_url = api
+            self.api = OsmApi(api=self.api_url,
+                          username=self.cfg.get("Authentication", "username"),
+                          password=b64decode(self.cfg.get("Authentication", "password")),
+                          appid="Piote/%s" % version)
 
     def pref_clicked(self, widget):
         # try to load the configuration
