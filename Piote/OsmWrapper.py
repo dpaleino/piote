@@ -32,10 +32,14 @@ from OsmApi import OsmApi
 import Piote
 
 class OsmWrapper():
-    def __init__(self):
+    def __init__(self, url=None):
         self.cfg = Config()
+        if url:
+            self.url = url
+        else:
+            self.url = self.cfg.get("DEFAULT", "api")
 
-        self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
+        self.api = OsmApi(api=self.url,
                           username=self.cfg.get("Authentication", "username"),
                           password=b64decode(self.cfg.get("Authentication", "password")),
                           appid="Piote/%s" % Piote.version)

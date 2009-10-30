@@ -39,7 +39,7 @@ from ChangesetDialog import ChangesetDialog
 class MainWindow():
     def __init__(self):
         self.obj = ""
-        self.osm = OsmWrapper()
+        Piote.API = OsmWrapper()
 
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         window.set_title("Piote %s" % Piote.version)
@@ -143,7 +143,7 @@ class MainWindow():
             try:
                 # Clear the previous data
                 self.tags.clear()
-                tags = self.osm.Get(self.obj.lower(), int(self.entry.get_text()))
+                tags = Piote.API.Get(self.obj.lower(), int(self.entry.get_text()))
                 for key in tags:
                     self.tags.append(None, [key, tags[key]])
 

@@ -32,6 +32,7 @@ import gtk
 import Piote
 from Piote.Utils import *
 from Config import Config, DuplicateSectionError, NoSectionError, NoOptionError
+from OsmWrapper import OsmWrapper
 from base64 import b64decode, b64encode
 
 class PreferencesDialog(gtk.Dialog):
@@ -80,10 +81,13 @@ class PreferencesDialog(gtk.Dialog):
         api06dev = gtk.RadioButton(group=api, label="api06.dev.openstreetmap.org")
         try:
             if self.cfg.get("DEFAULT", "api") == "api.openstreetmap.org":
+                self.api_url = "api.openstreetmap.org"
                 api.set_active(True)
             else:
+                self.api_url = "api06.dev.openstreetmap.org"
                 api06dev.set_active(True)
         except NoOptionError:
+            self.api_url = "api.openstreetmap.org"
             api.set_active(True)
         vbox.pack_start(api)
         vbox.pack_start(api06dev)
@@ -117,7 +121,7 @@ class PreferencesDialog(gtk.Dialog):
                 finally:
                     self.cfg.set("Authentication", "username", username.get_text())
                     self.cfg.set("Authentication", "password", b64encode(password.get_text()))
-                    self.cfg.set("DEFAULT", "api", Piote.api_url)
+                    self.cfg.set("DEFAULT", "api", self.api_url)
                 try:
                     self.cfg.write()
                 except IOError:
@@ -125,4 +129,6 @@ class PreferencesDialog(gtk.Dialog):
 
     def __api_changed(self, widget, api):
         if widget.get_active():
-            Piote.api_url = api
+            self.api_url = api
+            del Piote.API
+            Piote.API = OsmWrapper(self.api_url)
