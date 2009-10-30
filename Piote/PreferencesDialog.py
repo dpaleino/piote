@@ -79,18 +79,26 @@ class PreferencesDialog(gtk.Dialog):
         vbox = gtk.VBox()
         api = gtk.RadioButton(label="api.openstreetmap.org")
         api06dev = gtk.RadioButton(group=api, label="api06.dev.openstreetmap.org")
+        otherapibox = gtk.HBox()
+        otherapi = gtk.RadioButton(group=api)
+        otherapibox.pack_start(otherapi)
+        otherentry = gtk.Entry()
+        otherapibox.pack_start(otherentry)
         try:
-            if self.cfg.get("DEFAULT", "api") == "api.openstreetmap.org":
-                self.api_url = "api.openstreetmap.org"
+            self.api_url = self.cfg.get("DEFAULT", "api")
+            if self.api_url == "api.openstreetmap.org":
                 api.set_active(True)
-            else:
-                self.api_url = "api06.dev.openstreetmap.org"
+            elif self.api_url == "api06.dev.openstreetmap.org":
                 api06dev.set_active(True)
+            else:
+                otherapi.set_active(True)
+                otherentry.set_text(self.api_url)
         except NoOptionError:
             self.api_url = "api.openstreetmap.org"
             api.set_active(True)
         vbox.pack_start(api)
         vbox.pack_start(api06dev)
+        vbox.pack_start(otherapibox)
         align.add(vbox)
         frame.add(align)
         self.vbox.pack_start(frame)
@@ -100,6 +108,8 @@ class PreferencesDialog(gtk.Dialog):
 
         api.connect("toggled", self.__api_changed, "api.openstreetmap.org")
         api06dev.connect("toggled", self.__api_changed, "api06.dev.openstreetmap.org")
+        otherapi.connect("toggled", self.__api_changed, otherentry.get_text())
+        otherentry.connect("changed", self.__otherapi_changed, otherapi)
 
         # populate fields
         try:
@@ -132,3 +142,7 @@ class PreferencesDialog(gtk.Dialog):
             self.api_url = api
             del Piote.API
             Piote.API = OsmWrapper(self.api_url)
+
+    def __otherapi_changed(self, widget, otherapi):
+        otherapi.set_active(True)
+        self.__api_changed(otherapi, widget.get_text())
