@@ -26,16 +26,14 @@
 # SOFTWARE.
 
 from base64 import b64decode
-from ConfigParser import SafeConfigParser
+from Config import Config
 from OsmApi import OsmApi
 
 import Piote
 
 class OsmWrapper():
     def __init__(self):
-        # TODO: REMOVE!
-        self.cfg = SafeConfigParser()
-        self.cfg.read("piote.cfg")
+        self.cfg = Config()
 
         self.api = OsmApi(api=self.cfg.get("DEFAULT", "api"),
                           username=self.cfg.get("Authentication", "username"),

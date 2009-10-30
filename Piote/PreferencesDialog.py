@@ -31,14 +31,15 @@ import gtk
 
 import Piote
 from Piote.Utils import *
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError, DuplicateSectionError
+from Config import Config, DuplicateSectionError, NoSectionError, NoOptionError
 from base64 import b64decode, b64encode
 
 class PreferencesDialog(gtk.Dialog):
-    def __init__(self, widget):
-        # TODO: REMOVE!
-        self.cfg = SafeConfigParser()
-        self.cfg.read("piote.cfg")
+    def __init__(self, widget, conf=None):
+        if conf:
+            self.cfg = conf
+        else:
+            self.cfg = Config()
 
         gtk.Dialog.__init__(self,
                             "Preferences",
@@ -118,7 +119,7 @@ class PreferencesDialog(gtk.Dialog):
                     self.cfg.set("Authentication", "password", b64encode(password.get_text()))
                     self.cfg.set("DEFAULT", "api", Piote.api_url)
                 try:
-                    self.cfg.write(open("piote.cfg", "w"))
+                    self.cfg.write()
                 except IOError:
                     print "Cannot write to piote.cfg!"
 
