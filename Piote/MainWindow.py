@@ -58,9 +58,9 @@ class MainWindow():
 
         self.tags = gtk.TreeStore(str, str)
         #tags.append(None, None)
-        tagsview = gtk.TreeView(self.tags)
-        tagsview.connect("row-activated", EditTagDialog, self.tags)
-        vbox.pack_start(tagsview, True, True, 0)
+        self.tagsview = gtk.TreeView(self.tags)
+        self.tagsview.connect("row-activated", EditTagDialog, self.tags)
+        vbox.pack_start(self.tagsview, True, True, 0)
 
         savebox = gtk.HBox(False, 0)
         vbox.pack_start(savebox, False, False, 0)
@@ -88,7 +88,7 @@ class MainWindow():
         self.delbutton = gtk.Button(stock="gtk-remove")
         self.delbutton.set_use_underline(True)
         self.delbutton.unset_flags(gtk.SENSITIVE)
-        self.delbutton.connect("clicked", self.__del_tag, tagsview.get_selection())
+        self.delbutton.connect("clicked", self.__del_tag, self.tagsview.get_selection())
         buttonbox.pack_start(self.delbutton, True, True, 0)
 
         prefbutton = gtk.Button(stock="gtk-preferences")
@@ -104,19 +104,19 @@ class MainWindow():
         col = gtk.TreeViewColumn("Key")
         cell = gtk.CellRendererText()
         #cell.set_property("editable", True)
-        #cell.connect("edited", self.__cell_edited, tagsview.get_selection())
+        #cell.connect("edited", self.__cell_edited, self.tagsview.get_selection())
 
         col.pack_start(cell, True)
         col.add_attribute(cell, "text", 0)
         col.set_sort_column_id(0)
-        tagsview.append_column(col)
+        self.tagsview.append_column(col)
 
         col = gtk.TreeViewColumn("Value")
         col.pack_start(cell, True)
         col.add_attribute(cell, "text", 1)
-        tagsview.append_column(col)
+        self.tagsview.append_column(col)
 
-        tagsview.set_search_column(0)
+        self.tagsview.set_search_column(0)
 
         self.savebutton = gtk.Button(stock="gtk-save")
         self.savebutton.set_use_underline(True)
@@ -143,7 +143,7 @@ class MainWindow():
             try:
                 # Clear the previous data
                 self.tags.clear()
-                self.osm.Get(self.obj.lower(), int(self.entry.get_text()))
+                tags = self.osm.Get(self.obj.lower(), int(self.entry.get_text()))
                 for key in tags:
                     self.tags.append(None, [key, tags[key]])
 
