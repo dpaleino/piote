@@ -88,9 +88,9 @@ class TagDialog(gtk.Dialog):
                         tags.append(None, [self.key, self.value])
 
 class AddTagDialog(TagDialog):
-    def __init__(self, widget, tags):
+    def __init__(self, widget, tags, data=None):
         TagDialog.__init__(self, "new", widget, tags)
 
 class EditTagDialog(TagDialog):
-    def __init__(self, widget, tags):
+    def __init__(self, widget, event, tags, data=None):
         TagDialog.__init__(self, "edit", widget, tags)

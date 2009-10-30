@@ -32,7 +32,7 @@ import gtk
 import Piote
 
 class AboutDialog(gtk.AboutDialog):
-        def __init__(self):
+        def __init__(self, widget=None):
             gtk.AboutDialog.__init__(self)
             self.set_program_name("Piote")
             self.set_comments("Piote Is an Osm Tag Editor")
