@@ -100,7 +100,7 @@ class PreferencesDialog(gtk.Dialog):
         try:
             username.set_text(self.cfg.get("Authentication", "username"))
             password.set_text(b64decode(self.cfg.get("Authentication", "password")))
-        except NoSectionError, NoOptionError:
+        except (NoSectionError, NoOptionError):
             pass
 
         self.vbox.show_all()
