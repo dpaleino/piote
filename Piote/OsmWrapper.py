@@ -28,6 +28,7 @@
 from base64 import b64decode
 from Config import Config
 from OsmApi import OsmApi
+from collections import defaultdict
 
 import Piote
 

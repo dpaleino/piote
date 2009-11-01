@@ -37,7 +37,6 @@ from Piote.PreferencesDialog import PreferencesDialog
 from Piote.MainWindow import MainWindow
 from Piote.Utils import *
 
-from collections import defaultdict
 from base64 import b64encode, b64decode
 
 class Main():
