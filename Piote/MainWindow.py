@@ -106,7 +106,7 @@ class MainWindow():
         cell.connect("edited", self.__cell_edited, self.tagsview.get_selection(), 0)
 
         col.pack_start(cell, True)
-        col.add_attribute(cell, "text", 0)
+        col.add_attribute(cell, "markup", 0)
         col.set_sort_column_id(0)
         self.tagsview.append_column(col)
 
@@ -149,7 +149,7 @@ class MainWindow():
                 self.tags.clear()
                 tags = Piote.API.Get(self.obj.lower(), int(self.entry.get_text()))
                 for key in tags:
-                    self.tags.append(None, [key, tags[key]])
+                    self.tags.append(None, ["<b>%s</b>" % key, tags[key]])
 
                     # set sensitivity
                     self.addbutton.set_flags(gtk.SENSITIVE)

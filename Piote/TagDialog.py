@@ -80,12 +80,12 @@ class TagDialog(gtk.Dialog):
                     model[iter][1] = self.value
                 else:
                     for row in tags:
-                        if row[0] == self.key:
+                        if row[0] == "<b>%s</b>" % self.key:
                             already_key = True
                             row[1] = self.value
 
                     if not already_key:
-                        tags.append(None, [self.key, self.value])
+                        tags.append(None, ["<b>%s</b>" % self.key, self.value])
 
 class AddTagDialog(TagDialog):
     def __init__(self, widget, tags, data=None):
