@@ -30,6 +30,7 @@ pygtk.require("2.0")
 import gtk
 
 from Utils import *
+from OsmWrapper import OsmWrapper
 
 class ChangesetDialog(gtk.Dialog):
     def __init__(self, widget, obj, model):
