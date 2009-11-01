@@ -52,8 +52,8 @@ class OsmWrapper():
             f = self.api.WayGet
         elif obj == "relation":
             f = self.api.RelationGet
-        data = f(id)
-        return data["tag"]
+        Piote.data = f(id)
+        return Piote.data["tag"]
 
     def Put(self, msg, obj, model):
         changeset = self.api.ChangesetCreate({u"comment": unicode(msg)})
@@ -62,7 +62,7 @@ class OsmWrapper():
         for row in model:
             tags[unicode(row[0])] = unicode(row[1])
 
-        self.data["tag"] = tags
+        Piote.data["tag"] = tags
 
         if obj == "node":
             f = self.api.NodeUpdate
@@ -70,8 +70,8 @@ class OsmWrapper():
             f = self.api.WayUpdate
         elif obj == "relation":
             f = self.api.RelationUpdate
-        result = f(self.data)
-        self.data["version"] = result["version"]
+        result = f(Piote.data)
+        Piote.data["version"] = result["version"]
 
         #self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
         self.api.ChangesetClose()
