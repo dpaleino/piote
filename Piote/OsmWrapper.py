@@ -26,7 +26,7 @@
 # SOFTWARE.
 
 from base64 import b64decode
-from Config import Config
+from Config import Config, NoOptionError
 from OsmApi import OsmApi
 from collections import defaultdict
 
@@ -38,7 +38,10 @@ class OsmWrapper():
         if url:
             self.url = url
         else:
-            self.url = self.cfg.get("DEFAULT", "api")
+            try:
+                self.url = self.cfg.get("DEFAULT", "api")
+            except NoOptionError:
+                self.url = "api.openstreetmap.org"
 
         self.api = OsmApi(api=self.url,
                           username=self.cfg.get("Authentication", "username"),
