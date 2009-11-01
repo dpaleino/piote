@@ -31,7 +31,7 @@ import gtk
 
 import Piote
 from OsmWrapper import OsmWrapper
-from TagDialog import AddTagDialog, EditTagDialog
+from TagDialog import AddTagDialog
 from PreferencesDialog import PreferencesDialog
 from AboutDialog import AboutDialog
 from ChangesetDialog import ChangesetDialog
@@ -59,7 +59,6 @@ class MainWindow():
         self.tags = gtk.TreeStore(str, str)
         #tags.append(None, None)
         self.tagsview = gtk.TreeView(self.tags)
-        self.tagsview.connect("row-activated", EditTagDialog, self.tags)
         vbox.pack_start(self.tagsview, True, True, 0)
 
         savebox = gtk.HBox(False, 0)
@@ -103,8 +102,8 @@ class MainWindow():
 
         col = gtk.TreeViewColumn("Key")
         cell = gtk.CellRendererText()
-        #cell.set_property("editable", True)
-        #cell.connect("edited", self.__cell_edited, self.tagsview.get_selection())
+        cell.set_property("editable", True)
+        cell.connect("edited", self.__cell_edited, self.tagsview.get_selection(), 0)
 
         col.pack_start(cell, True)
         col.add_attribute(cell, "text", 0)
@@ -112,8 +111,13 @@ class MainWindow():
         self.tagsview.append_column(col)
 
         col = gtk.TreeViewColumn("Value")
+        cell = gtk.CellRendererText()
+        cell.set_property("editable", True)
+        cell.connect("edited", self.__cell_edited, self.tagsview.get_selection(), 1)
+
         col.pack_start(cell, True)
         col.add_attribute(cell, "text", 1)
+
         self.tagsview.append_column(col)
 
         self.tagsview.set_search_column(0)
@@ -158,10 +162,6 @@ class MainWindow():
         (store, iter) = selection.get_selected()
         store.remove(iter)
 
-    def __cell_edited(self, cell, path, new_text, selection):
+    def __cell_edited(self, cell, path, new_text, selection, column):
         (model, _iter) = selection.get_selected()
-        print repr(model)
-        print repr(_iter)
-        model[_iter][0] = new_text
-        # FIXME:     ↑ cambia sempre la prima colonna.. devo trovare COME passare il numero di colonna all'evento
-        pass
+        model[_iter][column] = new_text
