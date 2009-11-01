@@ -45,7 +45,7 @@ class ChangesetDialog(gtk.Dialog):
         self.vbox.pack_start(msg)
         self.vbox.show_all()
 
-        msg.connect("activate", lambda x: dlg.response(gtk.RESPONSE_ACCEPT))
+        msg.connect("activate", lambda x: self.response(gtk.RESPONSE_ACCEPT))
 
         response = self.run()
         self.destroy()
