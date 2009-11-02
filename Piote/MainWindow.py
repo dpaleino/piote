@@ -81,7 +81,7 @@ class MainWindow():
         self.addbutton = gtk.Button(stock="gtk-add")
         self.addbutton.set_use_underline(True)
         self.addbutton.unset_flags(gtk.SENSITIVE)
-        self.addbutton.connect("clicked", AddTagDialog, self.tags)
+        #self.addbutton.connect("clicked", AddTagDialog, self.tags)
         buttonbox.pack_start(self.addbutton, True, True, 0)
 
         self.delbutton = gtk.Button(stock="gtk-remove")
@@ -102,6 +102,7 @@ class MainWindow():
 
         col = gtk.TreeViewColumn("Key")
         cell = gtk.CellRendererText()
+        self.addbutton.connect("clicked", self.__add_tag, (col, cell))
         cell.set_property("editable", True)
         cell.set_property("weight", 800)
         cell.connect("edited", self.__cell_edited, self.tagsview.get_selection(), 0)
@@ -158,6 +159,11 @@ class MainWindow():
                     self.savebutton.set_flags(gtk.SENSITIVE)
             except ValueError:
                 print "No valid ID has been entered!"
+
+    def __add_tag(self, widget, data):
+        self.new_row_iter = self.tags.append(None, ["",""])
+        # FIXME: the usage of __len__() - 1 seems quite hackish.
+        self.tagsview.set_cursor_on_cell(self.tags.__len__() - 1, focus_column=data[0], focus_cell=data[1], start_editing=True)
 
     def __del_tag(self, widget, selection):
         (store, iter) = selection.get_selected()
