@@ -171,4 +171,19 @@ class MainWindow():
 
     def __cell_edited(self, cell, path, new_text, selection, column):
         (model, _iter) = selection.get_selected()
-        model[_iter][column] = new_text
+        if column == 0:
+            # i.e. if it's the Key column the one being edited
+            for row in model:
+                keyfound = False
+                if row[0] == new_text:
+                    # i.e. the newly entered key is already present
+                    # FIXME: should get a <path> somehow
+                    #self.tagsview.set_cursor_on_cell(<path>, focus_cell=<value>, start_editing=True)
+                    keyfound = True
+                    model.remove(self.new_row_iter)
+                    break
+
+            if not keyfound:
+                model[_iter][column] = new_text
+        else:
+            model[_iter][column] = new_text
