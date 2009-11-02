@@ -64,6 +64,9 @@ class MainWindow():
         savebox = gtk.HBox(False, 0)
         vbox.pack_start(savebox, False, False, 0)
 
+        self.status = gtk.Statusbar()
+        vbox.pack_start(self.status, False, False, 0)
+
         self.combobox = gtk.combo_box_new_text()
         for obj in ["Node", "Way", "Relation"]:
             self.combobox.append_text(obj)
@@ -144,7 +147,7 @@ class MainWindow():
 
         if not self.obj:
             # no object has been chosen
-            print "No object has been chosen!"
+            self.status.push(0, "No object has been chosen!")
         else:
             try:
                 # Clear the previous data
@@ -158,7 +161,7 @@ class MainWindow():
                     self.delbutton.set_flags(gtk.SENSITIVE)
                     self.savebutton.set_flags(gtk.SENSITIVE)
             except ValueError:
-                print "No valid ID has been entered!"
+                self.status.push(0, "No valid ID has been entered!")
 
     def __add_tag(self, widget, data):
         self.new_row_iter = self.tags.append(None, ["",""])
@@ -181,6 +184,7 @@ class MainWindow():
                     #self.tagsview.set_cursor_on_cell(<path>, focus_cell=<value>, start_editing=True)
                     keyfound = True
                     model.remove(self.new_row_iter)
+                    self.status.push(0, "Key already existing!")
                     break
 
             if not keyfound:
