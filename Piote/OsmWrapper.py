@@ -33,7 +33,7 @@ from collections import defaultdict
 import Piote
 
 class OsmWrapper():
-    def __init__(self, url=None):
+    def __init__(self, url=None, api=None):
         self.cfg = Config()
         if url:
             self.url = url
@@ -43,10 +43,13 @@ class OsmWrapper():
             except NoOptionError:
                 self.url = "api.openstreetmap.org"
 
-        self.api = OsmApi(api=self.url,
+        if not api:
+            self.api = OsmApi(api=self.url,
                           username=self.cfg.get("Authentication", "username"),
                           password=b64decode(self.cfg.get("Authentication", "password")),
                           appid="Piote/%s" % Piote.version)
+        else:
+            self.api = api
 
     def Get(self, obj, id):
         if obj == "node":
@@ -56,16 +59,20 @@ class OsmWrapper():
         elif obj == "relation":
             f = self.api.RelationGet
         Piote.data = f(id)
+        self.data = Piote.data
         return Piote.data["tag"]
 
-    def Put(self, msg, obj, model):
-        changeset = self.api.ChangesetCreate({u"comment": unicode(msg)})
+    def Put(self, msg, obj, model, data=None):
+        changeset = self.api.ChangesetCreate({u"comment": unicode(msg, "utf-8")})
         tags = defaultdict(str)
 
         for row in model:
-            tags[unicode(row[0])] = unicode(row[1])
+            tags[unicode(row[0], "utf-8")] = unicode(row[1], "utf-8")
 
-        Piote.data["tag"] = tags
+        if data:
+            data["tag"] = tags
+        else:
+            Piote.data["tag"] = tags
 
         if obj == "node":
             f = self.api.NodeUpdate
@@ -73,8 +80,13 @@ class OsmWrapper():
             f = self.api.WayUpdate
         elif obj == "relation":
             f = self.api.RelationUpdate
-        result = f(Piote.data)
-        Piote.data["version"] = result["version"]
+
+        if data:
+            result = f(data)
+            data["version"] = result["version"]
+        else:
+            result = f(Piote.data)
+            Piote.data["version"] = result["version"]
 
         #self.api.ChangesetUpload([{"type":obj, "action":"modify", "data":self.data}])
         self.api.ChangesetClose()
