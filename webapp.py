@@ -136,4 +136,4 @@ if __name__ == "__main__":
     bottle.debug(True)
     #bottle.default_app().autojson = False
     response.charset = "UTF-8"
-    run(host='192.168.1.40', port=80, reloader=True)
+    run(host='192.168.1.33', port=80, reloader=True)
