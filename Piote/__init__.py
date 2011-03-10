@@ -24,17 +24,17 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
-import pygtk
-pygtk.require("2.0")
-import gtk
 
-from Piote.MainWindow import MainWindow
+version = "0.1beta1"
+api_url = "api.openstreetmap.org"
 
-class Main():
-    def __init__(self):
-        MainWindow()
-
-if __name__ == "__main__":
-    Main()
-    gtk.main()
+__all__ = [
+            "AboutDialog",
+            "ChangesetDialog",
+            "MainWindow",
+            "OsmApi",
+            "OsmWrapper",
+            "PreferencesDialog",
+            "TagDialog",
+            "Utils",
+          ]

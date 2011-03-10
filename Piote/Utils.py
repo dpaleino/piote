@@ -24,17 +24,21 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
+
 import pygtk
 pygtk.require("2.0")
 import gtk
 
-from Piote.MainWindow import MainWindow
-
-class Main():
-    def __init__(self):
-        MainWindow()
-
-if __name__ == "__main__":
-    Main()
-    gtk.main()
+def check_empty(widget, field, dlg=None):
+    if widget.get_text() == "":
+        warn = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+                                 flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                                 buttons=gtk.BUTTONS_OK,
+                                 message_format="Cannot leave %s empty" % field)
+        warn.run()
+        warn.destroy()
+        return False
+    else:
+        if dlg:
+            dlg.response(gtk.RESPONSE_ACCEPT)
+        return True

@@ -24,17 +24,35 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
+
 import pygtk
 pygtk.require("2.0")
 import gtk
 
-from Piote.MainWindow import MainWindow
+from Utils import *
+from OsmWrapper import OsmWrapper
 
-class Main():
-    def __init__(self):
-        MainWindow()
+class ChangesetDialog(gtk.Dialog):
+    def __init__(self, widget, obj, model):
+        gtk.Dialog.__init__(self,
+                            "Uploading changeset",
+                            None,
+                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                            gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
 
-if __name__ == "__main__":
-    Main()
-    gtk.main()
+        self.vbox.pack_start(gtk.Label("Changeset message:"))
+        msg = gtk.Entry()
+        self.vbox.pack_start(msg)
+        self.vbox.show_all()
+
+        msg.connect("activate", lambda x: self.response(gtk.RESPONSE_ACCEPT))
+
+        response = self.run()
+        self.destroy()
+
+        if response == gtk.RESPONSE_ACCEPT:
+            if check_empty(msg, "Message"):
+                msg = msg.get_text()
+                osm = OsmWrapper()
+                osm.Put(msg, obj, model)

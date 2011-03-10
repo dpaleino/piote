@@ -24,17 +24,16 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
-import pygtk
-pygtk.require("2.0")
-import gtk
 
-from Piote.MainWindow import MainWindow
+from ConfigParser import SafeConfigParser, DuplicateSectionError, NoSectionError, NoOptionError
 
-class Main():
+class Config(SafeConfigParser):
     def __init__(self):
-        MainWindow()
+        SafeConfigParser.__init__(self)
 
-if __name__ == "__main__":
-    Main()
-    gtk.main()
+        if not self.read("piote.cfg"):
+            from PreferencesDialog import PreferencesDialog
+            PreferencesDialog(None, conf=self)
+
+    def write(self):
+        SafeConfigParser.write(self, open("piote.cfg", "w"))
