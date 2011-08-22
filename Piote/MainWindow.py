@@ -56,10 +56,12 @@ class MainWindow():
         buttonbox = gtk.HBox(False, 0)
         vbox.pack_start(buttonbox, False, False, 0)
 
+        scrolledwindow = gtk.ScrolledWindow()
         self.tags = gtk.TreeStore(str, str)
         #tags.append(None, None)
         self.tagsview = gtk.TreeView(self.tags)
-        vbox.pack_start(self.tagsview, True, True, 0)
+        scrolledwindow.add(self.tagsview)
+        vbox.pack_start(scrolledwindow, True, True, 0)
 
         savebox = gtk.HBox(False, 0)
         vbox.pack_start(savebox, False, False, 0)
